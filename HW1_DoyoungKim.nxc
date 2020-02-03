@@ -1,0 +1,38 @@
+task main() {
+
+  byte readBuffer[]; // To save data
+  int intRead;      // To save numeric data
+  
+  UseRS485(); // (1) Port S4 configured for RS485
+  RS485Enable(); // (2) turn on RS485
+  RS485Uart(HS_BAUD_57600, HS_MODE_DEFAULT); // (3) initialize UART 57600
+  Wait(100);
+  TextOut(0, LCD_LINE1, "If secret number is");
+  TextOut(0, LCD_LINE2, "Higher , Press >");
+  TextOut(0, LCD_LINE3, "Lower , Press <");
+  TextOut(0, LCD_LINE4, "Correct, Press[]");
+  while (true) {
+  
+        while(!RS485DataAvailable()) {
+        // if there is no received data, wait pressing button.
+         if(ButtonPressed(BTNRIGHT, FALSE)){        // if Right Button is pressed
+           while(ButtonPressed(BTNRIGHT, FALSE)); // Wait for Button is released
+           SendRS485String(" Higher "); // then send string
+         }
+         else if(ButtonPressed(BTNLEFT, FALSE)){
+           while(ButtonPressed(BTNLEFT, FALSE));
+           SendRS485String(" Lower ");
+         }
+         else if(ButtonPressed(BTNCENTER, FALSE)){
+              while(ButtonPressed(BTNCENTER, FALSE));
+              SendRS485String(" Correct!");
+         }
+        };
+        
+        ClearScreen();
+        RS485Read(readBuffer);// Read Data
+        intRead = StrToNum(ByteArrayToStr(readBuffer));// Convert Data to Numerical data
+        TextOut(0, LCD_LINE4, NumToStr(intRead));// Show received number
+     }
+  }
+}
