@@ -1,0 +1,27 @@
+#include "xl320-defines1_0a.h"
+#include "xl320-functions1_0a.h"
+
+#define ID_ALL_MOTORS 0XFE
+#define ID_MOTOR01    0X12
+
+#define DegreeTrans 1024/300                                     // INPUT(degree)-> OUTPUT(Motor Value)
+task main(){
+
+     bool orangeButtonPushed;                                    // Detect Brick Center button state
+     bool rightArrowButtonPushed;                                // Detect Brick Right arrow button state
+     bool leftArrowButtonPushed;                                 // Detect Brick Left  arrow button state
+     bool greyButtonPushed;                                      // Detect Brick Gray  button state
+
+     UseRS485();
+     RS485Enable();
+     RS485Uart(HS_BAUD_57600, HS_MODE_8N1);                      // Use 485 communication, 57600 baud, 8bit
+     ClearScreen();
+
+     TextOut(0, LCD_LINE1, "Stop: Press GRAY");
+     XL320_servo(ID_ALL_MOTORS, 512,200);                        // Homing the manipulator at position 12:00
+     Wait(2000);
+     XL320_servo(ID_ALL_MOTORS, 512-DegreeTrans*45, 200);        // rotate 45 degrees Clockwise
+     Wait(1000);
+
+     ClearScreen();
+}
